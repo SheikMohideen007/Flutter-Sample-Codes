@@ -23,4 +23,10 @@ class LocalStorage {
     print('after.. $notesList');
     await pref!.setStringList('notes', notesList);
   }
+
+  Future<List<String>> readNotes() async {
+    pref = await SharedPreferences.getInstance();
+    List<String> notesList = pref!.getStringList('notes') ?? [];
+    return notesList;
+  }
 }

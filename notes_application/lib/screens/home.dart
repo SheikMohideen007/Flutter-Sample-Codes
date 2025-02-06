@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes_application/db/local_storage.dart';
 import 'package:notes_application/screens/create_notes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +10,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<String> notesList = [];
+  @override
+  void initState() {
+    super.initState();
+    getNotes();
+  }
+
+  getNotes() async {
+    LocalStorage localStorage = LocalStorage();
+    notesList = await localStorage.readNotes();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,11 +48,27 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('Reminders',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
-            notesCard(
-                title: 'Coffee',
-                desc: 'Description detailks',
-                day: 'Yesterday',
-                color: const Color.fromARGB(255, 188, 98, 97)),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: notesList.length,
+                  itemBuilder: (context, index) {
+                    String title = notesList[index].split(':')[0];
+                    String description = notesList[index].split(':')[1];
+                    String color = notesList[index].split(':')[2];
+                    String dt = notesList[index].split(':')[3];
+                    print(color);
+                    String valueString =
+                        color.split('(0x')[1].split(')')[0]; // kind of hacky..
+                    int value = int.parse(valueString, radix: 16);
+                    Color color2 = Color(value);
+                    return notesCard(
+                      title: title,
+                      desc: description,
+                      day: dt,
+                      color: color2,
+                    );
+                  }),
+            )
           ],
         ),
       ),
