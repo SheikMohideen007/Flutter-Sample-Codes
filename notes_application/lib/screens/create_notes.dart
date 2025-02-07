@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes_application/db/db_service.dart';
 import 'package:notes_application/db/local_storage.dart';
 
 class CreateNotes extends StatefulWidget {
@@ -23,10 +24,16 @@ class _CreateNotesState extends State<CreateNotes> {
           print("${title.text}..${description.text}");
           if (title.text.trim().isNotEmpty &&
               description.text.trim().isNotEmpty) {
-            LocalStorage local = LocalStorage();
-            local.saveNotes(
-                title: title.text.trim(),
-                description: description.text.trim(),
+            // LocalStorage local = LocalStorage();
+            // local.saveNotes(
+            //     title: title.text.trim(),
+            //     description: description.text.trim(),
+            //     color: defaultColor,
+            //     dt: dt);
+            DbService dbService = DbService();
+            dbService.createNotes(
+                title: title.text,
+                description: description.text,
                 color: defaultColor,
                 dt: dt);
 

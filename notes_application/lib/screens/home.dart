@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:notes_application/db/db_service.dart';
 import 'package:notes_application/db/local_storage.dart';
 import 'package:notes_application/screens/create_notes.dart';
 
@@ -49,26 +51,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                  itemCount: notesList.length,
-                  itemBuilder: (context, index) {
-                    String title = notesList[index].split(':')[0];
-                    String description = notesList[index].split(':')[1];
-                    String color = notesList[index].split(':')[2];
-                    String dt = notesList[index].split(':')[3];
-                    print(color);
-                    String valueString =
-                        color.split('(0x')[1].split(')')[0]; // kind of hacky..
-                    int value = int.parse(valueString, radix: 16);
-                    Color color2 = Color(value);
-                    return notesCard(
-                      title: title,
-                      desc: description,
-                      day: dt,
-                      color: color2,
-                    );
+              child: StreamBuilder(
+                  stream: DbService().readNotes(),
+                  builder: (context, snapshot) {
+                    return MasonryGridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        itemCount: notesList.length,
+                        itemBuilder: (context, index) {
+                          String title = notesList[index].split(':')[0];
+                          String description = notesList[index].split(':')[1];
+                          String color = notesList[index].split(':')[2];
+                          String dt = notesList[index].split(':')[3];
+                          print(color);
+                          String valueString = color
+                              .split('(0x')[1]
+                              .split(')')[0]; // kind of hacky..
+                          int value = int.parse(valueString, radix: 16);
+                          Color color2 = Color(value);
+                          return notesCard(
+                            title: title,
+                            desc: description,
+                            day: dt,
+                            color: color2,
+                          );
+                        });
                   }),
-            )
+            ),
           ],
         ),
       ),
