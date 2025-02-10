@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:notes_application/db/db_service.dart';
 import 'package:notes_application/db/local_storage.dart';
 import 'package:notes_application/screens/create_notes.dart';
+import 'package:notes_application/screens/update_notes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,17 +15,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<String> notesList = [];
-  @override
-  void initState() {
-    super.initState();
-    getNotes();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getNotes();
+  // }
 
-  getNotes() async {
-    LocalStorage localStorage = LocalStorage();
-    notesList = await localStorage.readNotes();
-    setState(() {});
-  }
+  // getNotes() async {
+  //   LocalStorage localStorage = LocalStorage();
+  //   notesList = await localStorage.readNotes();
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -54,27 +56,77 @@ class _HomeScreenState extends State<HomeScreen> {
               child: StreamBuilder(
                   stream: DbService().readNotes(),
                   builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    QuerySnapshot qs = snapshot.data;
+                    int len = qs.docs.length;
+                    print(len);
                     return MasonryGridView.count(
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        itemCount: notesList.length,
+                        itemCount: len,
                         itemBuilder: (context, index) {
-                          String title = notesList[index].split(':')[0];
-                          String description = notesList[index].split(':')[1];
-                          String color = notesList[index].split(':')[2];
-                          String dt = notesList[index].split(':')[3];
+                          DocumentSnapshot ds = qs.docs[index];
+                          Map data = ds.data() as Map;
+                          String title = data['title'];
+                          String description = data['description'];
+                          String color = data['color'];
+                          String dt = data['date_time'];
                           print(color);
                           String valueString = color
                               .split('(0x')[1]
                               .split(')')[0]; // kind of hacky..
                           int value = int.parse(valueString, radix: 16);
                           Color color2 = Color(value);
-                          return notesCard(
-                            title: title,
-                            desc: description,
-                            day: dt,
-                            color: color2,
+                          return GestureDetector(
+                            onLongPress: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text('Delete'),
+                                      content: Text(
+                                          "Are you sure want to delete it ?"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              DbService()
+                                                  .deleteNotes(docId: ds.id);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Deleted Successfully !!!')));
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Yes')),
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('No')),
+                                      ],
+                                    );
+                                  });
+                            },
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateNotes(
+                                        docId: ds.id,
+                                        title: title,
+                                        description: description,
+                                        color: color2))),
+                            child: notesCard(
+                              title: title,
+                              desc: description,
+                              day: dt.split(" ")[0],
+                              color: color2,
+                            ),
                           );
                         });
                   }),
