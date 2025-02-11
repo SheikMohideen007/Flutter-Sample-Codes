@@ -1,1 +1,1 @@
-Here is Sample demo for online tutoring classes
+Here is a Sample demo for online tutoring classes
