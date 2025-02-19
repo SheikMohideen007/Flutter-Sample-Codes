@@ -1,6 +1,8 @@
+import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/product_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,6 +15,12 @@ class _HomeState extends State<Home> {
   double devHeight = 0.0;
   double devWidth = 0.0;
   String symbol = "\$";
+  List<String> sampleImages = [
+    'https://img.freepik.com/free-photo/lovely-woman-vintage-outfit-expressing-interest-outdoor-shot-glamorous-happy-girl-sunglasses_197531-11312.jpg',
+    'https://img.freepik.com/free-photo/shapely-woman-vintage-dress-touching-her-glasses-outdoor-shot-interested-relaxed-girl-brown-outfit_197531-11308.jpg',
+    'https://img.freepik.com/premium-photo/cheerful-lady-brown-outfit-looking-around-outdoor-portrait-fashionable-caucasian-model-with-short-wavy-hairstyle_197531-25791.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
@@ -42,13 +50,29 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: devHeight * 0.25,
                     width: devWidth,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage(
-                              'images/hero_img.png',
-                            ))),
+                    child: FanCarouselImageSlider.sliderType1(
+                      showIndicator: false,
+                      expandFitAndZoomable: true,
+                      slideViewportFraction: 1,
+                      sliderWidth: devWidth,
+                      imageRadius: 20,
+                      expandImageWidth: devWidth,
+                      imagesLink: sampleImages,
+                      isAssets: false,
+                      autoPlay: true,
+                      sliderHeight: devHeight * 0.23,
+
+                      // showIndicator: false,
+                    ),
+                    // decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.all(Radius.circular(40)),
+                    //     image: DecorationImage(
+                    //         fit: BoxFit.cover,
+                    //         image: AssetImage(
+                    //           'images/hero_img.png',
+                    //         ))
+
+                    //         ),
                   ),
                 ),
                 Text(
