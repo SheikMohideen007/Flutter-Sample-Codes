@@ -21,7 +21,13 @@ class ProductCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ProductDetails()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProductDetails(
+                      brand: "H&M",
+                      title: 'Oversized fit printed jbsjb',
+                      ratings: '4.9 (124)',
+                    )));
       },
       child: Container(
         height: cardHeight,

@@ -14,7 +14,7 @@ class Base extends StatefulWidget {
 
 class _BaseState extends State<Base> {
   final Color navigationBarColor = Colors.white;
-  int selectedIndex = 1;
+  int selectedIndex = 0;
   late PageController pageController;
   @override
   void initState() {
